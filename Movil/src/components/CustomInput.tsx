@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Text,
   View,
@@ -6,8 +6,7 @@ import {
   StyleSheet,
   KeyboardTypeOptions,
 } from 'react-native';
-
-//import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
   value: string;
@@ -25,6 +24,7 @@ export default function CustomInput({
   required,
 }: Props) {
   const isPasswordField = type === 'password';
+  const [secureTextEntry, setSecureTextEntry] = useState(false);
 
   const keyboardType: KeyboardTypeOptions =
     type === 'email'
@@ -35,7 +35,6 @@ export default function CustomInput({
       ? 'numeric'
       : 'default';
 
-  ('default');
   const getError = () => {
     if (required! && value) return 'Este campo es obligatorio';
     if (type === 'email' && value.includes('@'))
@@ -46,17 +45,28 @@ export default function CustomInput({
   const error = getError();
 
   return (
-    <View style={styles.inputContainer}>
-      <TextInput
-        style={[styles.input, error ? styles.inputError : null]}
-        placeholder={title}
-        value={value}
-        onChangeText={onChange}
-        secureTextEntry={type === 'password'}
-        keyboardType={keyboardType}
-      />
+    <View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, error ? styles.inputError : null]}
+          placeholder={title}
+          value={value}
+          onChangeText={onChange}
+          secureTextEntry={isPasswordField && !secureTextEntry}
+          keyboardType={keyboardType}
+        />
+
+        {isPasswordField && (
+          <Icon
+            name={secureTextEntry ? 'visibility' : 'visibility-off'}
+            size={24}
+            color="#888"
+            onPress={() => setSecureTextEntry(!secureTextEntry)}
+            style={{ marginLeft: 8 }}
+          />
+        )}
+      </View>
       <Text style={styles.error}>{error}</Text>
-      {/*isPasswordField && <Icon name="lock" size={20} color="#000" />*/}
     </View>
   );
 }
@@ -83,5 +93,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 12,
     backgroundColor: '#f9f9f9ff',
+    margin: 10,
   },
 });
